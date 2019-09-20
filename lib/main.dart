@@ -36,72 +36,80 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Icon(Icons.all_inclusive),
       ),
       backgroundColor: Colors.grey[900],
-      body: Container(
-        child: GridView.count(
-          primary: false,
-          padding: EdgeInsets.all(18),
-          crossAxisSpacing: 18,
-          mainAxisSpacing: 18,
-          crossAxisCount: 2,
-          childAspectRatio: 1.0 / 1.0,
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white54, width: 1.0),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                color: Color(0xFF614A19),
-                onPressed: () {},
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      body: ListView(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: GridView.count(
+                  padding: EdgeInsets.all(18),
+                  crossAxisSpacing: 18,
+                  mainAxisSpacing: 18,
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.0 / 1.0,
+                  shrinkWrap: true,
                   children: <Widget>[
-                    Icon(
-                      MdiIcons.lightbulbOnOutline,
-                      size: 54.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: 16.0,
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white54, width: 1.0),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        color: Color(0xFF614A19),
+                        onPressed: () {},
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.lightbulbOnOutline,
+                              size: 54.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: 16.0,
+                              ),
+                            ),
+                            Text('Turn ON every light')
+                          ],
+                        ),
                       ),
                     ),
-                    Text('Turn ON every light')
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white54, width: 1.0),
+                          borderRadius: BorderRadius.circular(8.0)),
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        color: Color(0xFF5C2B29),
+                        onPressed: () {},
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.lightbulbOffOutline,
+                              size: 54.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: 16.0,
+                              ),
+                            ),
+                            Text('Turn OFF every light')
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white54, width: 1.0),
-                  borderRadius: BorderRadius.circular(8.0)),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                color: Color(0xFF5C2B29),
-                onPressed: () {},
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      MdiIcons.lightbulbOffOutline,
-                      size: 54.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: 16.0,
-                      ),
-                    ),
-                    Text('Turn OFF every light')
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColorDark,
