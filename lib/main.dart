@@ -43,11 +43,13 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisSpacing: 18,
           mainAxisSpacing: 18,
           crossAxisCount: 2,
+          childAspectRatio: 1.0 / 1.0,
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white54, width: 1.0),
-                  borderRadius: BorderRadius.circular(8.0)),
+                border: Border.all(color: Colors.white54, width: 1.0),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
               child: RaisedButton(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
