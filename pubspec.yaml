@@ -21,6 +21,7 @@ dependencies:
     sdk: flutter
 
   material_design_icons_flutter: 3.2.4096
+  mqtt_client: ^5.5.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
