@@ -16,59 +16,50 @@ class ShortcutsWidget extends StatelessWidget {
       childAspectRatio: 1.0 / 1.0,
       shrinkWrap: true,
       children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white54, width: 1.0),
+        RaisedButton(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
+            side: BorderSide(color: Colors.white54, width: 1.0),
           ),
-          child: RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            color: Theme.of(context).primaryColorDark,
-            onPressed: () {},
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  MdiIcons.lightbulbOnOutline,
-                  size: 54.0,
+          color: Theme.of(context).primaryColorDark,
+          onPressed: () {},
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                MdiIcons.lightbulbOnOutline,
+                size: 54.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: 16.0,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 16.0,
-                  ),
-                ),
-                Text('Turn ON every light')
-              ],
-            ),
+              ),
+              Text('Turn ON every light')
+            ],
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.white54, width: 1.0),
-              borderRadius: BorderRadius.circular(8.0)),
-          child: RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            color: Colors.grey[800],
-            onPressed: () {},
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  MdiIcons.lightbulbOffOutline,
-                  size: 54.0,
+        RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            side: BorderSide(color: Colors.white54, width: 1.0),
+          ),
+          color: Colors.grey[800],
+          onPressed: () {},
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                MdiIcons.lightbulbOffOutline,
+                size: 54.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: 16.0,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 16.0,
-                  ),
-                ),
-                Text('Turn OFF every light')
-              ],
-            ),
+              ),
+              Text('Turn OFF every light')
+            ],
           ),
         ),
       ],

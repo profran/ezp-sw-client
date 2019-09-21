@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/components/light_switch.dart';
@@ -9,11 +10,19 @@ void main() => runApp(MyApp());
 const lights = [
   {
     'alias': 'Bedroom light',
-    'topic': '1234',
+    'topic': 'lights/1234',
   },
   {
     'alias': 'Heaven\'s door',
-    'topic': '1235',
+    'topic': 'lights/1235',
+  },
+  {
+    'alias': 'Garden',
+    'topic': 'lights/1236',
+  },
+  {
+    'alias': 'Front door',
+    'topic': 'lights/1237',
   },
 ];
 
@@ -45,8 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
   mqtt.MqttConnectionState connectionState;
   StreamSubscription subscription;
   var lightState = {
-    '1234': false,
-    '1235': false,
   };
 
   void _connect() async {
@@ -58,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await client.connect();
     } catch (e) {
       print(e);
+      _disconnect();
     }
 
     if (client.connectionState == mqtt.MqttConnectionState.connected) {
@@ -93,9 +101,18 @@ class _MyHomePageState extends State<MyHomePage> {
     print('MQTT message: topic is <${event[0].topic}>, '
         'payload is <-- $message -->');
     print(client.connectionState);
+
     setState(() {
       lightState[event[0].topic] = message == '1' ? true : false;
     });
+  }
+
+  void _switchHandler(String topic, bool state) {
+    final mqtt.MqttClientPayloadBuilder builder =
+        mqtt.MqttClientPayloadBuilder();
+
+    builder.addString(state ? '1' : '0');
+    client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload);
   }
 
   @override
@@ -158,12 +175,19 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(
             children: <Widget>[
               Expanded(
-                child: Column(
+                child: GridView.count(
+                  padding: EdgeInsets.all(18),
+                  crossAxisSpacing: 18,
+                  mainAxisSpacing: 18,
+                  crossAxisCount: 2,
+                  childAspectRatio: 2.0 / 1.0,
+                  shrinkWrap: true,
                   children: lights
                       .map((light) => LightSwitch(
                             alias: light['alias'],
+                            state: lightState[light['topic']] ?? false,
                             topic: light['topic'],
-                            state: lightState[light['topic']],
+                            switchHandler: _switchHandler,
                           ))
                       .toList(),
                 ),
