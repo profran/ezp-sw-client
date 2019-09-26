@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
+import 'package:mqtt_switch/components/add_light.dart';
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/components/light_switch.dart';
 
@@ -34,8 +35,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         primaryColorDark: Colors.teal,
+        appBarTheme: AppBarTheme(
+          color: Colors.grey[800],
+        )
       ),
-      home: MyHomePage(title: 'Home'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MyHomePage(title: 'Home'),
+        '/add': (context) => AddLight()
+      },
     );
   }
 }
@@ -56,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var lightState = {};
 
   void _connect() async {
-    client = mqtt.MqttClient('10.0.2.2', 'Flutter app');
+    client = mqtt.MqttClient('192.168.0.253', 'Flutter app');
 
     client.logging(on: true);
 
@@ -144,7 +152,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ? FloatingActionButton(
               backgroundColor: Theme.of(context).primaryColorDark,
               tooltip: 'Add',
-              onPressed: _connect,
+              onPressed: () {
+                Navigator.pushNamed(context, '/add');
+              },
               child: Icon(Icons.add),
             )
           : FloatingActionButton.extended(
