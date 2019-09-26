@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       title: 'MQTT Switch',
       theme: ThemeData(
         brightness: Brightness.dark,
-        primaryColorDark: Colors.purple[200],
+        primaryColorDark: Colors.teal,
       ),
       home: MyHomePage(title: 'Home'),
     );
@@ -53,11 +53,10 @@ class _MyHomePageState extends State<MyHomePage> {
   mqtt.MqttClient client;
   mqtt.MqttConnectionState connectionState;
   StreamSubscription subscription;
-  var lightState = {
-  };
+  var lightState = {};
 
   void _connect() async {
-    client = mqtt.MqttClient('192.168.0.253', 'Flutter app');
+    client = mqtt.MqttClient('10.0.2.2', 'Flutter app');
 
     client.logging(on: true);
 
@@ -108,11 +107,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _switchHandler(String topic, bool state) {
+    _publish(topic, state ? '1' : '0');
+  }
+
+  void _publish(String topic, String message) {
     final mqtt.MqttClientPayloadBuilder builder =
         mqtt.MqttClientPayloadBuilder();
 
-    builder.addString(state ? '1' : '0');
+    builder.addString(message);
     client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload);
+  }
+
+  void _broadcast(String message) {
+    lights.forEach((el) => _publish(el['topic'], message));
+  }
+
+  void allOff() {
+    _broadcast('0');
+  }
+
+  void allOn() {
+    _broadcast('1');
   }
 
   @override
@@ -162,7 +177,10 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(
             children: <Widget>[
               Expanded(
-                child: ShortcutsWidget(),
+                child: ShortcutsWidget(
+                  allOn: allOn,
+                  allOff: allOff,
+                ),
               ),
             ],
           ),

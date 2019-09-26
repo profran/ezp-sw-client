@@ -3,8 +3,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class ShortcutsWidget extends StatelessWidget {
   const ShortcutsWidget({
-    Key key,
+    Key key, this.allOff, this.allOn,
   }) : super(key: key);
+
+  final Function allOff;
+  final Function allOn;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class ShortcutsWidget extends StatelessWidget {
             side: BorderSide(color: Colors.white54, width: 1.0),
           ),
           color: Theme.of(context).primaryColorDark,
-          onPressed: () {},
+          onPressed: allOn,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -45,7 +48,7 @@ class ShortcutsWidget extends StatelessWidget {
             side: BorderSide(color: Colors.white54, width: 1.0),
           ),
           color: Colors.grey[800],
-          onPressed: () {},
+          onPressed: allOff,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
