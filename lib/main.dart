@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mqtt.MqttClientPayloadBuilder();
 
     builder.addString(message);
-    client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload);
+    client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload, retain: true);
   }
 
   void _broadcast(String message) {
