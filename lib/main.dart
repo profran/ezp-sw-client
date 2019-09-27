@@ -5,27 +5,32 @@ import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:mqtt_switch/components/add_light.dart';
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/components/light_switch.dart';
+import 'package:mqtt_switch/models/light.dart';
 
 void main() => runApp(MyApp());
 
-const lights = [
-  {
-    'alias': 'Bedroom light',
-    'topic': 'lights/1234',
-  },
-  {
-    'alias': 'Heaven\'s door',
-    'topic': 'lights/1235',
-  },
-  {
-    'alias': 'Garden',
-    'topic': 'lights/1236',
-  },
-  {
-    'alias': 'Front door',
-    'topic': 'lights/1237',
-  },
+List<Light> lights = <Light>[
+  Light(
+    alias: 'Bedroom light',
+    topic: 'lights/1234',
+  ),
+  Light(
+    alias: 'Heaven\'s door',
+    topic: 'lights/1235',
+  ),
+  Light(
+    alias: 'Garden',
+    topic: 'lights/1236',
+  ),
+  Light(
+    alias: 'Front door',
+    topic: 'lights/1237',
+  ),
 ];
+
+void addLight(String alias, String topic) {
+  lights.add(Light(alias: alias, topic: topic));
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -33,16 +38,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MQTT Switch',
       theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColorDark: Colors.teal,
-        appBarTheme: AppBarTheme(
-          color: Colors.grey[800],
-        )
-      ),
+          brightness: Brightness.dark,
+          primaryColorDark: Colors.teal,
+          appBarTheme: AppBarTheme(
+            color: Colors.grey[800],
+          )),
       initialRoute: '/',
       routes: {
         '/': (context) => MyHomePage(title: 'Home'),
-        '/add': (context) => AddLight()
+        '/add': (context) => AddLight(
+              addLight: addLight,
+            )
       },
     );
   }
@@ -64,9 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
   var lightState = {};
 
   void _connect() async {
-    client = mqtt.MqttClient('192.168.0.253', 'Flutter app');
+    client = mqtt.MqttClient('10.0.2.2', 'Flutter app');
 
-    client.logging(on: true);
+    // client.logging(on: true);
 
     try {
       await client.connect();
@@ -75,20 +81,20 @@ class _MyHomePageState extends State<MyHomePage> {
       _disconnect();
     }
 
-    if (client.connectionState == mqtt.MqttConnectionState.connected) {
+    if (client.connectionStatus.state == mqtt.MqttConnectionState.connected) {
       print('MQTT client connected');
       setState(() {
-        connectionState = client.connectionState;
+        connectionState = client.connectionStatus.state;
       });
     } else {
       print('ERROR: MQTT client connection failed - '
-          'disconnecting, state is ${client.connectionState}');
+          'disconnecting, state is ${client.connectionStatus.state}');
     }
 
     subscription = client.updates.listen(_onMessage);
 
     lights.forEach(
-        (light) => client?.subscribe(light['topic'], mqtt.MqttQos.exactlyOnce));
+        (light) => client?.subscribe(light.topic, mqtt.MqttQos.exactlyOnce));
   }
 
   void _disconnect() {
@@ -99,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onMessage(List<mqtt.MqttReceivedMessage> event) {
-    print(event.length);
     final mqtt.MqttPublishMessage recMess =
         event[0].payload as mqtt.MqttPublishMessage;
     final String message =
@@ -107,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print('MQTT message: topic is <${event[0].topic}>, '
         'payload is <-- $message -->');
-    print(client.connectionState);
 
     setState(() {
       lightState[event[0].topic] = message == '1' ? true : false;
@@ -123,11 +127,12 @@ class _MyHomePageState extends State<MyHomePage> {
         mqtt.MqttClientPayloadBuilder();
 
     builder.addString(message);
-    client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload, retain: true);
+    client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload,
+        retain: true);
   }
 
   void _broadcast(String message) {
-    lights.forEach((el) => _publish(el['topic'], message));
+    lights.forEach((light) => _publish(light.topic, message));
   }
 
   void allOff() {
@@ -159,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           : FloatingActionButton.extended(
               backgroundColor: Theme.of(context).primaryColorDark,
-              tooltip: 'Add',
+              tooltip: 'Connect',
               onPressed: _connect,
               label: Text('Connect to broker'),
             ),
@@ -212,9 +217,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   shrinkWrap: true,
                   children: lights
                       .map((light) => LightSwitch(
-                            alias: light['alias'],
-                            state: lightState[light['topic']] ?? false,
-                            topic: light['topic'],
+                            alias: light.alias,
+                            state: lightState[light.topic] ?? false,
+                            topic: light.topic,
                             switchHandler: _switchHandler,
                           ))
                       .toList(),
