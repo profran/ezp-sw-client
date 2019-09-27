@@ -150,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[800],
+        elevation: 0.0,
         centerTitle: true,
         title: Icon(Icons.all_inclusive),
       ),
@@ -186,48 +187,58 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      backgroundColor: Colors.grey[900],
-      body: ListView(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: ShortcutsWidget(
-                  allOn: allOn,
-                  allOff: allOff,
+      backgroundColor: Colors.grey[800],
+      body: Container(
+        padding: EdgeInsets.only(top: 6.0),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16.0),
+            topRight: Radius.circular(16.0)
+          ),
+        ),
+        child: ListView(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: ShortcutsWidget(
+                    allOn: allOn,
+                    allOff: allOff,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Divider(
-            color: Colors.white54,
-            thickness: 1.0,
-            indent: 18.0,
-            endIndent: 18.0,
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: GridView.count(
-                  padding: EdgeInsets.all(18),
-                  crossAxisSpacing: 18,
-                  mainAxisSpacing: 18,
-                  crossAxisCount: 2,
-                  childAspectRatio: 2.0 / 1.0,
-                  shrinkWrap: true,
-                  children: lights
-                      .map((light) => LightSwitch(
-                            alias: light.alias,
-                            state: lightState[light.topic] ?? false,
-                            topic: light.topic,
-                            switchHandler: _switchHandler,
-                          ))
-                      .toList(),
+              ],
+            ),
+            Divider(
+              color: Colors.white54,
+              thickness: 1.0,
+              indent: 18.0,
+              endIndent: 18.0,
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: GridView.count(
+                    padding: EdgeInsets.all(18),
+                    crossAxisSpacing: 18,
+                    mainAxisSpacing: 18,
+                    crossAxisCount: 2,
+                    childAspectRatio: 2.0 / 1.0,
+                    shrinkWrap: true,
+                    children: lights
+                        .map((light) => LightSwitch(
+                              alias: light.alias,
+                              state: lightState[light.topic] ?? false,
+                              topic: light.topic,
+                              switchHandler: _switchHandler,
+                            ))
+                        .toList(),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
