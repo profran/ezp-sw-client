@@ -1,10 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:mqtt_switch/components/add_light.dart';
-import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/components/light_switch.dart';
+import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/models/light.dart';
 
 void main() => runApp(MyApp());
@@ -72,35 +72,50 @@ class _MyHomePageState extends State<MyHomePage> {
   void _connect() async {
     client = mqtt.MqttClient('10.0.2.2', 'Flutter app');
 
+    client.onDisconnected = _onDisconnected;
+    client.onConnected = _onConnected;
+
     // client.logging(on: true);
 
     try {
+      setState(() {
+        client.connectionStatus.state = mqtt.MqttConnectionState.connecting;
+      });
       await client.connect();
     } catch (e) {
       print(e);
       _disconnect();
     }
 
-    if (client.connectionStatus.state == mqtt.MqttConnectionState.connected) {
-      print('MQTT client connected');
-      setState(() {
-        connectionState = client.connectionStatus.state;
-      });
+    if (client?.connectionStatus?.state == mqtt.MqttConnectionState.connected) {
     } else {
       print('ERROR: MQTT client connection failed - '
-          'disconnecting, state is ${client.connectionStatus.state}');
+          'disconnecting, state is ${client?.connectionStatus?.state}');
     }
+  }
+
+  void _onConnected() {
+    print('MQTT client connected');
+
+    setState(() {
+      connectionState = client.connectionStatus.state;
+    });
 
     subscription = client.updates.listen(_onMessage);
-
     lights.forEach(
-        (light) => client?.subscribe(light.topic, mqtt.MqttQos.exactlyOnce));
+        (light) => client.subscribe(light.topic, mqtt.MqttQos.exactlyOnce));
   }
 
   void _disconnect() {
     client.disconnect();
+  }
+
+  void _onDisconnected() {
     setState(() {
-      connectionState = mqtt.MqttConnectionState.disconnected;
+      connectionState = client.connectionStatus.state;
+      client = null;
+      subscription?.cancel();
+      subscription = null;
     });
   }
 
@@ -168,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: 'Connect',
               onPressed: _connect,
               label: Text('Connect to broker'),
-            ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: connected ? CircularNotchedRectangle() : null,
@@ -193,9 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
         decoration: BoxDecoration(
           color: Colors.grey[900],
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16.0),
-            topRight: Radius.circular(16.0)
-          ),
+              topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
         ),
         child: ListView(
           children: <Widget>[
