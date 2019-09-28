@@ -31,6 +31,7 @@ class _AddLightState extends State<AddLight> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         title: Text('Add light'),
         actions: <Widget>[
           Builder(
@@ -65,8 +66,14 @@ class _AddLightState extends State<AddLight> {
         backgroundColor: Theme.of(context).primaryColorDark,
         child: Icon(MdiIcons.qrcodeScan),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(18.0),
+      backgroundColor: Colors.grey[800],
+      body: Container(
+        padding: EdgeInsets.only(top: 24.0, right: 18.0, bottom: 18.0, left: 18.0, ),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
+        ),
         child: Form(
           key: _formKey,
           child: Column(
