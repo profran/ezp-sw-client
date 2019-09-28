@@ -162,6 +162,36 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     bool connected = connectionState == mqtt.MqttConnectionState.connected;
 
+    Widget fab;
+
+    switch (client?.connectionStatus?.state) {
+      case mqtt.MqttConnectionState.connected:
+        fab = FloatingActionButton(
+          backgroundColor: Theme.of(context).primaryColorDark,
+          tooltip: 'Add',
+          onPressed: () {
+            Navigator.pushNamed(context, '/add');
+          },
+          child: Icon(Icons.add),
+        );
+        break;
+      case mqtt.MqttConnectionState.connecting:
+        fab = FloatingActionButton(
+          backgroundColor: Theme.of(context).primaryColorDark,
+          tooltip: 'Add',
+          onPressed: null,
+          child: CircularProgressIndicator(),
+        );
+        break;
+      default:
+        fab = FloatingActionButton.extended(
+          backgroundColor: Theme.of(context).primaryColorDark,
+          tooltip: 'Connect',
+          onPressed: _connect,
+          label: Text('Connect to broker'),
+        );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[800],
@@ -169,21 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: Icon(Icons.all_inclusive),
       ),
-      floatingActionButton: connected
-          ? FloatingActionButton(
-              backgroundColor: Theme.of(context).primaryColorDark,
-              tooltip: 'Add',
-              onPressed: () {
-                Navigator.pushNamed(context, '/add');
-              },
-              child: Icon(Icons.add),
-            )
-          : FloatingActionButton.extended(
-              backgroundColor: Theme.of(context).primaryColorDark,
-              tooltip: 'Connect',
-              onPressed: _connect,
-              label: Text('Connect to broker'),
-      ),
+      floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: connected ? CircularNotchedRectangle() : null,
