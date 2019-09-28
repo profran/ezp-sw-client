@@ -3,7 +3,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class ShortcutsWidget extends StatelessWidget {
   const ShortcutsWidget({
-    Key key, this.allOff, this.allOn,
+    Key key,
+    this.allOff,
+    this.allOn,
   }) : super(key: key);
 
   final Function allOff;
