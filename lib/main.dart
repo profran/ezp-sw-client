@@ -11,49 +11,49 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
 
-List<Light> lights = <Light>[
-  Light(
-    alias: 'Bedroom light',
-    topic: 'lights/1234',
-  ),
-  Light(
-    alias: 'Heaven\'s door',
-    topic: 'lights/1235',
-  ),
-  Light(
-    alias: 'Garden',
-    topic: 'lights/1236',
-  ),
-  Light(
-    alias: 'Front door',
-    topic: 'lights/1237',
-  ),
-];
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
 
-void addLight(String alias, String topic) async {
-  Light light = Light(alias: alias, topic: topic);
-  lights.add(light);
+  _MyAppState createState() => _MyAppState();
 }
 
-void saveLights() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String> lightList = [];
-  print(lights);
-  lights.forEach((light) => lightList.add(json.encode(light.toJson())));
-  print(lightList);
-  await prefs.setStringList('lights', lightList);
-}
+class _MyAppState extends State<MyApp> {
+  List<Light> lights = <Light>[];
 
-void getSavedLights() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String> savedLights = prefs.getStringList('lights');
-  print(savedLights.toString());
+  void addLight(String alias, String topic) async {
+    Light light = Light(alias: alias, topic: topic);
+    setState(() {
+      lights.add(light);
+    });
+    _saveLights();
+  }
 
-  lights = [];
-  savedLights?.forEach((light) => lights.add(Light.fromJson(json.decode(light))));
-}
+  void _saveLights() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> lightList = [];
+    print(lights);
+    lights.forEach((light) => lightList.add(json.encode(light.toJson())));
+    print(lightList);
+    await prefs.setStringList('lights', lightList);
+  }
 
-class MyApp extends StatelessWidget {
+  void _getSavedLights() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> savedLights = prefs.getStringList('lights');
+    print(savedLights.toString());
+
+    lights = [];
+    savedLights?.forEach((light) => setState(() {
+          lights.add(Light.fromJson(json.decode(light)));
+        }));
+  }
+
+  @override
+  void initState() {
+    _getSavedLights();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -66,19 +66,23 @@ class MyApp extends StatelessWidget {
           )),
       initialRoute: '/',
       routes: {
-        '/': (context) => MyHomePage(title: 'Home'),
+        '/': (context) => MyHomePage(
+              title: 'Home',
+              lights: lights,
+            ),
         '/add': (context) => AddLight(
               addLight: addLight,
-            )
+            ),
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, this.lights}) : super(key: key);
 
   final String title;
+  final List<Light> lights;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -123,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     subscription = client.updates.listen(_onMessage);
-    lights.forEach(
+    this.widget.lights.forEach(
         (light) => client.subscribe(light.topic, mqtt.MqttQos.exactlyOnce));
   }
 
@@ -168,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _broadcast(String message) {
-    lights.forEach((light) => _publish(light.topic, message));
+    this.widget.lights.forEach((light) => _publish(light.topic, message));
   }
 
   void allOff() {
@@ -253,8 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: ShortcutsWidget(
-                    allOn: saveLights,
-                    allOff: getSavedLights,
+                    allOn: allOn,
+                    allOff: allOff,
                   ),
                 ),
               ],
@@ -268,14 +272,16 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: GridView.count(
+                  child: this.widget.lights.isNotEmpty ? GridView.count(
                     padding: EdgeInsets.all(18),
                     crossAxisSpacing: 18,
                     mainAxisSpacing: 18,
                     crossAxisCount: 2,
                     childAspectRatio: 2.0 / 1.0,
                     shrinkWrap: true,
-                    children: lights
+                    children: this
+                        .widget
+                        .lights
                         .map((light) => LightSwitch(
                               alias: light.alias,
                               state: lightState[light.topic] ?? false,
@@ -283,7 +289,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               switchHandler: _switchHandler,
                             ))
                         .toList(),
-                  ),
+                  ) : Center(
+                    child: CircularProgressIndicator(),
+                  )
                 ),
               ],
             ),
