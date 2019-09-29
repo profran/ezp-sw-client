@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
@@ -6,6 +7,7 @@ import 'package:mqtt_switch/components/add_light.dart';
 import 'package:mqtt_switch/components/light_switch.dart';
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/models/light.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,8 +30,27 @@ List<Light> lights = <Light>[
   ),
 ];
 
-void addLight(String alias, String topic) {
-  lights.add(Light(alias: alias, topic: topic));
+void addLight(String alias, String topic) async {
+  Light light = Light(alias: alias, topic: topic);
+  lights.add(light);
+}
+
+void saveLights() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String> lightList = [];
+  print(lights);
+  lights.forEach((light) => lightList.add(json.encode(light.toJson())));
+  print(lightList);
+  await prefs.setStringList('lights', lightList);
+}
+
+void getSavedLights() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String> savedLights = prefs.getStringList('lights');
+  print(savedLights.toString());
+
+  lights = [];
+  savedLights?.forEach((light) => lights.add(Light.fromJson(json.decode(light))));
 }
 
 class MyApp extends StatelessWidget {
@@ -232,8 +253,8 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: ShortcutsWidget(
-                    allOn: allOn,
-                    allOff: allOff,
+                    allOn: saveLights,
+                    allOff: getSavedLights,
                   ),
                 ),
               ],
