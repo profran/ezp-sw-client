@@ -1,15 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mqtt_switch/state/settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Settings extends StatefulWidget {
-  Settings({Key key, this.addLight}) : super(key: key);
+class SettingsScreen extends StatefulWidget {
+  SettingsScreen({Key key, this.addLight}) : super(key: key);
 
   final Function addLight;
 
-  _SettingsState createState() => _SettingsState();
+  _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController urlController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -18,7 +20,7 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Settings'),
+        title: Text('SettingsScreen'),
       ),
       backgroundColor: Colors.grey[800],
       body: Container(
@@ -39,12 +41,15 @@ class _SettingsState extends State<Settings> {
                   right: 32.0,
                 ),
                 title: Text('Broker URL'),
-                subtitle: Text('192.168.0.1'),
+                subtitle: Text(Settings.of(context).brokerURL ?? 'Broker URL not set'),
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0))),
                         title: Text('Edit broker URL'),
                         content: TextFormField(
                           controller: urlController,
@@ -55,7 +60,7 @@ class _SettingsState extends State<Settings> {
                             return null;
                           },
                           decoration: InputDecoration(
-                            labelText: 'Broker url',
+                            labelText: 'URL',
                           ),
                         ),
                         actions: <Widget>[
@@ -68,6 +73,7 @@ class _SettingsState extends State<Settings> {
                           RaisedButton(
                             color: Theme.of(context).primaryColorDark,
                             onPressed: () {
+                              Settings.of(context).changeBrokerURL(urlController.text);
                               Navigator.of(context).pop();
                             },
                             child: Text(
@@ -93,7 +99,9 @@ class _SettingsState extends State<Settings> {
                 title: Text('Demo mode'),
                 trailing: Switch(
                   value: true,
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    // _saveDemoMode(value);
+                  },
                 ),
               ),
               Divider(

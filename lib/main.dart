@@ -8,6 +8,7 @@ import 'package:mqtt_switch/components/light_switch.dart';
 import 'package:mqtt_switch/components/settings.dart';
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/models/light.dart';
+import 'package:mqtt_switch/state/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
@@ -57,25 +58,27 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MQTT Switch',
-      theme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColorDark: Colors.teal,
-          appBarTheme: AppBarTheme(
-            color: Colors.grey[800],
-          )),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => MyHomePage(
-              title: 'Home',
-              lights: lights,
-            ),
-        '/add': (context) => AddLight(
-              addLight: addLight,
-            ),
-        '/settings': (context) => Settings(),
-      },
+    return SettingsContainer(
+      child: MaterialApp(
+        title: 'MQTT Switch',
+        theme: ThemeData(
+            brightness: Brightness.dark,
+            primaryColorDark: Colors.teal,
+            appBarTheme: AppBarTheme(
+              color: Colors.grey[800],
+            )),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => MyHomePage(
+                title: 'Home',
+                lights: lights,
+              ),
+          '/add': (context) => AddLight(
+                addLight: addLight,
+              ),
+          '/settings': (context) => SettingsScreen(),
+        },
+      ),
     );
   }
 }
@@ -97,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
   var lightState = {};
 
   void _connect() async {
-    client = mqtt.MqttClient('10.0.2.2', 'Flutter app');
+    print(Settings.of(context).brokerURL);
+    client = mqtt.MqttClient(Settings.of(context).brokerURL, 'Flutter app');
 
     client.onDisconnected = _onDisconnected;
     client.onConnected = _onConnected;
