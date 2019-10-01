@@ -57,12 +57,7 @@ class _AddLightState extends State<AddLight> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final snackbar = SnackBar(
-            content: Text('You have errors'),
-          );
-          Scaffold.of(context).showSnackBar(snackbar);
-        },
+        onPressed: () {},
         backgroundColor: Theme.of(context).primaryColorDark,
         child: Icon(MdiIcons.qrcodeScan),
       ),

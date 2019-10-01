@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:mqtt_switch/components/add_light.dart';
 import 'package:mqtt_switch/components/light_switch.dart';
+import 'package:mqtt_switch/components/settings.dart';
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/models/light.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,6 +74,7 @@ class _MyAppState extends State<MyApp> {
         '/add': (context) => AddLight(
               addLight: addLight,
             ),
+        '/settings': (context) => Settings(),
       },
     );
   }
@@ -99,8 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     client.onDisconnected = _onDisconnected;
     client.onConnected = _onConnected;
-
-    // client.logging(on: true);
 
     try {
       setState(() {
@@ -244,6 +244,35 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       backgroundColor: Colors.grey[800],
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.grey[800],
+              ),
+              child: Center(
+                child: Text('MQTT Switch'),
+              ),
+            ),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text('Settings'),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/settings');
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Container(
         padding: EdgeInsets.only(top: 6.0),
         decoration: BoxDecoration(
@@ -272,27 +301,28 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: this.widget.lights.isNotEmpty ? GridView.count(
-                    padding: EdgeInsets.all(18),
-                    crossAxisSpacing: 18,
-                    mainAxisSpacing: 18,
-                    crossAxisCount: 2,
-                    childAspectRatio: 2.0 / 1.0,
-                    shrinkWrap: true,
-                    children: this
-                        .widget
-                        .lights
-                        .map((light) => LightSwitch(
-                              alias: light.alias,
-                              state: lightState[light.topic] ?? false,
-                              topic: light.topic,
-                              switchHandler: _switchHandler,
-                            ))
-                        .toList(),
-                  ) : Center(
-                    child: CircularProgressIndicator(),
-                  )
-                ),
+                    child: this.widget.lights.isNotEmpty
+                        ? GridView.count(
+                            padding: EdgeInsets.all(18),
+                            crossAxisSpacing: 18,
+                            mainAxisSpacing: 18,
+                            crossAxisCount: 2,
+                            childAspectRatio: 2.0 / 1.0,
+                            shrinkWrap: true,
+                            children: this
+                                .widget
+                                .lights
+                                .map((light) => LightSwitch(
+                                      alias: light.alias,
+                                      state: lightState[light.topic] ?? false,
+                                      topic: light.topic,
+                                      switchHandler: _switchHandler,
+                                    ))
+                                .toList(),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          )),
               ],
             ),
           ],
