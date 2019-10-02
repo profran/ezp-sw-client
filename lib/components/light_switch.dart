@@ -18,7 +18,7 @@ class LightSwitch extends StatelessWidget {
         side: BorderSide(color: Colors.grey[400], width: 1.0),
       ),
       elevation: 0.0,
-      color: state ? Theme.of(context).primaryColor : Colors.transparent,
+      color: state ? Theme.of(context).primaryColor : Theme.of(context).dialogBackgroundColor,
       onPressed: () {
         switchHandler(topic, !state);
       },

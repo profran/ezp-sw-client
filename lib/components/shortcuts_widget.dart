@@ -55,7 +55,7 @@ class ShortcutsWidget extends StatelessWidget {
             side: BorderSide(color: Colors.grey[400], width: 1.0),
           ),
           elevation: 0.0,
-          color: Colors.transparent,
+          color: Theme.of(context).dialogBackgroundColor,
           onPressed: allOff,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
