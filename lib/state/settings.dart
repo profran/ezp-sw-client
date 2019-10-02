@@ -51,7 +51,7 @@ class _SettingsContainerState extends State<SettingsContainer> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      darkMode = prefs.getBool('darkMode');
+      darkMode = prefs.getBool('darkMode') ?? false;
     });
   }
 
