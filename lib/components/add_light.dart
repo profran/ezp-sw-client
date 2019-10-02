@@ -58,14 +58,18 @@ class _AddLightState extends State<AddLight> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Theme.of(context).primaryColorDark,
         child: Icon(MdiIcons.qrcodeScan),
       ),
-      backgroundColor: Colors.grey[800],
+      backgroundColor: Theme.of(context).appBarTheme.color,
       body: Container(
-        padding: EdgeInsets.only(top: 24.0, right: 18.0, bottom: 18.0, left: 18.0, ),
+        padding: EdgeInsets.only(
+          top: 24.0,
+          right: 18.0,
+          bottom: 18.0,
+          left: 18.0,
+        ),
         decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: Theme.of(context).backgroundColor,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
         ),

@@ -11,6 +11,7 @@ class SettingsContainer extends StatefulWidget {
 
 class _SettingsContainerState extends State<SettingsContainer> {
   String brokerURL = 'brokerURL';
+  bool darkMode = false;
 
   void changeBrokerURL(String brokerURL) {
     _saveBrokerURL(brokerURL);
@@ -33,6 +34,27 @@ class _SettingsContainerState extends State<SettingsContainer> {
     });
   }
 
+  void changeDarkMode(bool newDarkMode) {
+    _saveDarkMode(newDarkMode);
+  }
+
+  void _saveDarkMode(bool newDarkMode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool('brokerURL', newDarkMode);
+    setState(() {
+      darkMode = newDarkMode;
+    });
+  }
+
+  void _getSavedDarkMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      darkMode = prefs.getBool('darkMode');
+    });
+  }
+
   @override
   void initState() {
     _getSavedBrokerURL();
@@ -44,18 +66,24 @@ class _SettingsContainerState extends State<SettingsContainer> {
     return Settings(
       brokerURL,
       changeBrokerURL,
+      darkMode,
+      changeDarkMode,
       child: this.widget.child,
     );
   }
 }
 
 class Settings extends InheritedWidget {
-  Settings(this.brokerURL, this.changeBrokerURL, {Key key, this.child})
+  Settings(
+      this.brokerURL, this.changeBrokerURL, this.darkMode, this.changeDarkMode,
+      {Key key, this.child})
       : super(key: key, child: child);
 
   final Widget child;
   final String brokerURL;
   final ValueChanged<String> changeBrokerURL;
+  final bool darkMode;
+  final ValueChanged<bool> changeDarkMode;
 
   static Settings of(BuildContext context) {
     return (context.inheritFromWidgetOfExactType(Settings) as Settings);

@@ -62,11 +62,26 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'MQTT Switch',
         theme: ThemeData(
-            brightness: Brightness.dark,
-            primaryColorDark: Colors.teal,
+            brightness: Brightness.light,
+            primarySwatch: Colors.teal,
+            primaryColor: Colors.teal,
             appBarTheme: AppBarTheme(
-              color: Colors.grey[800],
-            )),
+              color: Colors.teal,
+              brightness: Brightness.light,
+            ),
+            scaffoldBackgroundColor: Colors.teal,
+            backgroundColor: Colors.white),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: Colors.teal,
+          primaryColor: Colors.teal,
+          appBarTheme: AppBarTheme(
+            color: Colors.grey[800],
+            brightness: Brightness.dark,
+          ),
+          scaffoldBackgroundColor: Colors.teal,
+          backgroundColor: Colors.grey[900],
+        ),
         initialRoute: '/',
         routes: {
           '/': (context) => MyHomePage(
@@ -196,7 +211,6 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (client?.connectionStatus?.state) {
       case mqtt.MqttConnectionState.connected:
         fab = FloatingActionButton(
-          backgroundColor: Theme.of(context).primaryColorDark,
           tooltip: 'Add',
           onPressed: () {
             Navigator.pushNamed(context, '/add');
@@ -206,7 +220,6 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case mqtt.MqttConnectionState.connecting:
         fab = FloatingActionButton(
-          backgroundColor: Theme.of(context).primaryColorDark,
           tooltip: 'Add',
           onPressed: null,
           child: CircularProgressIndicator(),
@@ -214,7 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       default:
         fab = FloatingActionButton.extended(
-          backgroundColor: Theme.of(context).primaryColorDark,
           tooltip: 'Connect',
           onPressed: _connect,
           label: Text('Connect to broker'),
@@ -223,39 +235,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[800],
         elevation: 0.0,
         centerTitle: true,
         title: Icon(Icons.all_inclusive),
       ),
+      backgroundColor: Theme.of(context).appBarTheme.color,
       floatingActionButton: fab,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: connected ? CircularNotchedRectangle() : null,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(connected ? Icons.clear : Icons.settings),
-              onPressed: connected ? _disconnect : () {},
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.grey[800],
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-              ),
               child: Center(
                 child: Text('MQTT Switch'),
               ),
@@ -271,6 +262,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushNamed(context, '/settings');
                     },
                   ),
+                  ListTile(
+                    leading: Icon(Icons.close),
+                    title: Text('Disconnect'),
+                    onTap: () {
+                      _disconnect();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -280,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         padding: EdgeInsets.only(top: 6.0),
         decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: Theme.of(context).backgroundColor,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
         ),
@@ -297,8 +295,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Divider(
-              color: Colors.white54,
-              thickness: 1.0,
               indent: 18.0,
               endIndent: 18.0,
             ),

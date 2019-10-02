@@ -14,13 +14,18 @@ class LightSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return RaisedButton(
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          side: BorderSide(color: Colors.white54, width: 1.0)),
-      color: state ? Theme.of(context).primaryColorDark : Colors.grey[800],
+        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide(color: Colors.grey[400], width: 1.0),
+      ),
+      elevation: 0.0,
+      color: state ? Theme.of(context).primaryColor : Colors.transparent,
       onPressed: () {
         switchHandler(topic, !state);
       },
-      child: Text(alias),
+      child: Text(
+        alias,
+        style: state ? Theme.of(context).primaryTextTheme.button : null,
+      ),
     );
   }
 }

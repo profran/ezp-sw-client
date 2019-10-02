@@ -22,11 +22,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         elevation: 0.0,
         title: Text('Settings'),
       ),
-      backgroundColor: Colors.grey[800],
+      backgroundColor: Theme.of(context).appBarTheme.color,
       body: Container(
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: Theme.of(context).backgroundColor,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
         ),
@@ -41,7 +41,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   right: 32.0,
                 ),
                 title: Text('Broker URL'),
-                subtitle: Text(Settings.of(context).brokerURL ?? 'Broker URL not set'),
+                subtitle: Text(
+                    Settings.of(context).brokerURL ?? 'Broker URL not set'),
                 onTap: () {
                   showDialog(
                     context: context,
@@ -71,14 +72,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           ),
                           RaisedButton(
-                            color: Theme.of(context).primaryColorDark,
                             onPressed: () {
-                              Settings.of(context).changeBrokerURL(urlController.text);
+                              Settings.of(context)
+                                  .changeBrokerURL(urlController.text);
                               Navigator.of(context).pop();
                             },
                             child: Text(
                               'Save',
-                              style: TextStyle(color: Colors.black),
+                              style: Theme.of(context).primaryTextTheme.button,
                             ),
                           ),
                         ],

@@ -24,9 +24,10 @@ class ShortcutsWidget extends StatelessWidget {
         RaisedButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
-            side: BorderSide(color: Colors.white54, width: 1.0),
+            side: BorderSide(color: Colors.grey[400], width: 1.0),
           ),
-          color: Theme.of(context).primaryColorDark,
+          elevation: 0.0,
+          color: Theme.of(context).primaryColor,
           onPressed: allOn,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -34,22 +35,27 @@ class ShortcutsWidget extends StatelessWidget {
               Icon(
                 MdiIcons.lightbulbOnOutline,
                 size: 54.0,
+                color: Theme.of(context).primaryTextTheme.button.color,
               ),
               Padding(
                 padding: EdgeInsets.only(
                   bottom: 16.0,
                 ),
               ),
-              Text('Turn ON every light')
+              Text(
+                'Turn ON every light',
+                style: Theme.of(context).primaryTextTheme.button,
+              )
             ],
           ),
         ),
         RaisedButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
-            side: BorderSide(color: Colors.white54, width: 1.0),
+            side: BorderSide(color: Colors.grey[400], width: 1.0),
           ),
-          color: Colors.grey[800],
+          elevation: 0.0,
+          color: Colors.transparent,
           onPressed: allOff,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
