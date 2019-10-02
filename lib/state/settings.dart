@@ -41,7 +41,7 @@ class _SettingsContainerState extends State<SettingsContainer> {
   void _saveDarkMode(bool newDarkMode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await prefs.setBool('brokerURL', newDarkMode);
+    await prefs.setBool('darkMode', newDarkMode);
     setState(() {
       darkMode = newDarkMode;
     });

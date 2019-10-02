@@ -13,6 +13,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
 
+ThemeData lightMode = new ThemeData(
+          brightness: Brightness.light,
+          primarySwatch: Colors.teal,
+          primaryColor: Colors.teal,
+          appBarTheme: AppBarTheme(
+            color: Colors.teal,
+            brightness: Brightness.light,
+          ),
+          scaffoldBackgroundColor: Colors.teal,
+          backgroundColor: Colors.white,
+        );
+
+ThemeData darkMode = new ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: Colors.teal,
+          primaryColor: Colors.teal,
+          appBarTheme: AppBarTheme(
+            color: Colors.grey[800],
+            brightness: Brightness.dark,
+          ),
+          scaffoldBackgroundColor: Colors.teal,
+          backgroundColor: Colors.grey[900],
+        );
+
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);
 
@@ -59,40 +83,25 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return SettingsContainer(
-      child: MaterialApp(
-        title: 'MQTT Switch',
-        theme: ThemeData(
-            brightness: Brightness.light,
-            primarySwatch: Colors.teal,
-            primaryColor: Colors.teal,
-            appBarTheme: AppBarTheme(
-              color: Colors.teal,
-              brightness: Brightness.light,
-            ),
-            scaffoldBackgroundColor: Colors.teal,
-            backgroundColor: Colors.white),
-        darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          primarySwatch: Colors.teal,
-          primaryColor: Colors.teal,
-          appBarTheme: AppBarTheme(
-            color: Colors.grey[800],
-            brightness: Brightness.dark,
-          ),
-          scaffoldBackgroundColor: Colors.teal,
-          backgroundColor: Colors.grey[900],
-        ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => MyHomePage(
-                title: 'Home',
-                lights: lights,
-              ),
-          '/add': (context) => AddLight(
-                addLight: addLight,
-              ),
-          '/settings': (context) => SettingsScreen(),
-        },
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            title: 'MQTT Switch',
+            theme: Settings.of(context).darkMode ? darkMode : lightMode,
+            darkTheme: darkMode,
+            initialRoute: '/',
+            routes: {
+              '/': (context) => MyHomePage(
+                    title: 'Home',
+                    lights: lights,
+                  ),
+              '/add': (context) => AddLight(
+                    addLight: addLight,
+                  ),
+              '/settings': (context) => SettingsScreen(),
+            },
+          );
+        }
       ),
     );
   }

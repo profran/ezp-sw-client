@@ -117,8 +117,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: Text('Dark mode'),
                 subtitle: Text('This shouldn\'t be an option'),
                 trailing: Switch(
-                  value: true,
-                  onChanged: (value) {},
+                  value: Settings.of(context).darkMode,
+                  onChanged: MediaQuery.of(context).platformBrightness ==
+                          Brightness.light
+                      ? (value) {
+                          Settings.of(context).changeDarkMode(value);
+                        }
+                      : null,
                 ),
               ),
             ],
