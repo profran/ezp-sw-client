@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mqtt_switch/state/lights.dart';
 
 class AddLight extends StatefulWidget {
   AddLight({Key key, this.addLight}) : super(key: key);
@@ -40,9 +41,7 @@ class _AddLightState extends State<AddLight> {
                 icon: Icon(Icons.done),
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-                    this
-                        .widget
-                        .addLight(aliasController.text, topicController.text);
+                    Lights.of(context).addLight(aliasController.text, topicController.text);
                     Navigator.pop(context);
                   } else {
                     final snackbar = SnackBar(

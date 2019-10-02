@@ -58,6 +58,7 @@ class _SettingsContainerState extends State<SettingsContainer> {
   @override
   void initState() {
     _getSavedBrokerURL();
+    _getSavedDarkMode();
     super.initState();
   }
 
