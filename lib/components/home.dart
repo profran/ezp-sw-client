@@ -188,10 +188,10 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text('Settings'),
+                    leading: Icon(Icons.add),
+                    title: Text('Add light'),
                     onTap: () {
-                      Navigator.pushNamed(context, '/settings');
+                      Navigator.pushNamed(context, '/add');
                     },
                   ),
                   ListTile(
@@ -199,6 +199,13 @@ class _HomeState extends State<Home> {
                     title: Text('Disconnect'),
                     onTap: () {
                       _disconnect();
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text('Settings'),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/settings');
                     },
                   ),
                 ],
