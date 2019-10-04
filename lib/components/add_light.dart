@@ -1,4 +1,6 @@
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mqtt_switch/state/lights.dart';
 
@@ -14,10 +16,28 @@ class _AddLightState extends State<AddLight> {
   final TextEditingController aliasController = TextEditingController();
   final TextEditingController topicController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String error;
 
   void addLight() {
     if (aliasController.text != null && topicController.text != null) {
       this.widget.addLight(aliasController.text, topicController.text);
+    }
+  }
+
+  Future _barcodeScanning() async {
+    try {
+      String data = await BarcodeScanner.scan();
+      setState(() => this.topicController.text = data);
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+        setState(() => this.error = 'No camera permission');
+      } else {
+        setState(() => this.error = 'Unknown error: $e');
+      }
+    } on FormatException {
+      setState(() => this.error = 'Nothing captured.');
+    } catch (e) {
+      setState(() => this.error = 'Unknown error: $e');
     }
   }
 
@@ -56,7 +76,9 @@ class _AddLightState extends State<AddLight> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _barcodeScanning();
+        },
         child: Icon(MdiIcons.qrcodeScan),
       ),
       backgroundColor: Theme.of(context).appBarTheme.color,
