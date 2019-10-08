@@ -251,9 +251,8 @@ class _HomeState extends State<Home> {
                             children: Lights.of(context)
                                 .lights
                                 .map((light) => LightSwitch(
-                                      alias: light.alias,
+                                      light: light,
                                       state: lightState[light.topic] ?? false,
-                                      topic: light.topic,
                                       switchHandler: _switchHandler,
                                     ))
                                 .toList(),
