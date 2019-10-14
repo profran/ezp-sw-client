@@ -43,6 +43,16 @@ class _LightsContainerState extends State<LightsContainer> {
     });
   }
 
+  void changeLightState(String topic, bool state) {
+    List<Light> match = this.lights.where((el) => el.topic == topic).toList();
+
+    if (match != null) {
+      setState(() {
+        match.forEach((el) => el.state = state);
+      });
+    }
+  }
+
   @override
   void initState() {
     _getSavedLights();
@@ -54,18 +64,20 @@ class _LightsContainerState extends State<LightsContainer> {
     return Lights(
       lights,
       addLight,
+      changeLightState,
       child: this.widget.child,
     );
   }
 }
 
 class Lights extends InheritedWidget {
-  Lights(this.lights, this.addLight, {Key key, this.child})
+  Lights(this.lights, this.addLight, this.changeLightState, {Key key, this.child})
       : super(key: key, child: child);
 
   final Widget child;
   final List<Light> lights;
   final Function addLight;
+  final Function changeLightState;
 
   static Lights of(BuildContext context) {
     return (context.inheritFromWidgetOfExactType(Lights) as Lights);

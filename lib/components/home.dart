@@ -1,146 +1,16 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:mqtt_switch/components/light_switch.dart';
 import 'package:mqtt_switch/components/shortcuts_widget.dart';
 import 'package:mqtt_switch/state/lights.dart';
-import 'package:mqtt_switch/state/settings.dart';
+import 'package:mqtt_switch/state/mqttState.dart';
 
-ThemeData lightMode = new ThemeData(
-  brightness: Brightness.light,
-  primarySwatch: Colors.teal,
-  primaryColor: Colors.teal,
-  appBarTheme: AppBarTheme(
-    color: Colors.teal,
-    brightness: Brightness.light,
-  ),
-  scaffoldBackgroundColor: Colors.teal,
-  backgroundColor: Colors.white,
-);
-
-ThemeData darkMode = new ThemeData(
-  brightness: Brightness.dark,
-  primarySwatch: Colors.teal,
-  primaryColor: Colors.teal,
-  appBarTheme: AppBarTheme(
-    color: Colors.grey[800],
-    brightness: Brightness.dark,
-  ),
-  scaffoldBackgroundColor: Colors.teal,
-  backgroundColor: Colors.grey[900],
-);
-
-class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
-
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  mqtt.MqttClient client;
-  mqtt.MqttConnectionState connectionState;
-  StreamSubscription subscription;
-  var lightState = {};
-
-  void _connect() async {
-    print(Settings.of(context).brokerURL);
-    client = mqtt.MqttClient(Settings.of(context).brokerURL, 'Flutter app');
-
-    client.onDisconnected = _onDisconnected;
-    client.onConnected = _onConnected;
-
-    try {
-      setState(() {
-        client.connectionStatus.state = mqtt.MqttConnectionState.connecting;
-      });
-      await client.connect();
-    } catch (e) {
-      print(e);
-      _disconnect();
-    }
-
-    if (client?.connectionStatus?.state == mqtt.MqttConnectionState.connected) {
-    } else {
-      print('ERROR: MQTT client connection failed - '
-          'disconnecting, state is ${client?.connectionStatus?.state}');
-    }
-  }
-
-  void _onConnected() {
-    print('MQTT client connected');
-
-    setState(() {
-      connectionState = client.connectionStatus.state;
-    });
-
-    subscription = client.updates.listen(_onMessage);
-    Lights.of(context).lights.forEach(
-        (light) => client.subscribe(light.topic, mqtt.MqttQos.exactlyOnce));
-  }
-
-  void _disconnect() {
-    client.disconnect();
-  }
-
-  void _onDisconnected() {
-    setState(() {
-      connectionState = client.connectionStatus.state;
-      client = null;
-      subscription?.cancel();
-      subscription = null;
-    });
-  }
-
-  void _onMessage(List<mqtt.MqttReceivedMessage> event) {
-    final mqtt.MqttPublishMessage recMess =
-        event[0].payload as mqtt.MqttPublishMessage;
-    final String message =
-        mqtt.MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-    print('MQTT message: topic is <${event[0].topic}>, '
-        'payload is <-- $message -->');
-
-    setState(() {
-      lightState[event[0].topic] = message == '1' ? true : false;
-    });
-  }
-
-  void _switchHandler(String topic, bool state) {
-    _publish(topic, state ? '1' : '0');
-  }
-
-  void _publish(String topic, String message) {
-    final mqtt.MqttClientPayloadBuilder builder =
-        mqtt.MqttClientPayloadBuilder();
-
-    builder.addString(message);
-    client.publishMessage(topic, mqtt.MqttQos.values[0], builder.payload,
-        retain: true);
-  }
-
-  void _broadcast(String message) {
-    Lights.of(context)
-        .lights
-        .forEach((light) => _publish(light.topic, message));
-  }
-
-  void allOff() {
-    _broadcast('0');
-  }
-
-  void allOn() {
-    _broadcast('1');
-  }
-
+class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    bool connected = connectionState == mqtt.MqttConnectionState.connected;
-
     Widget fab;
 
-    switch (client?.connectionStatus?.state) {
+    switch (MqttState.of(context).connectionState) {
       case mqtt.MqttConnectionState.connected:
         fab = FloatingActionButton(
           tooltip: 'Add',
@@ -160,7 +30,7 @@ class _HomeState extends State<Home> {
       default:
         fab = FloatingActionButton.extended(
           tooltip: 'Connect',
-          onPressed: _connect,
+          onPressed: MqttState.of(context).connect,
           label: Text('Connect to broker'),
         );
     }
@@ -198,7 +68,7 @@ class _HomeState extends State<Home> {
                     leading: Icon(Icons.close),
                     title: Text('Disconnect'),
                     onTap: () {
-                      _disconnect();
+                      MqttState.of(context).disconnect();
                     },
                   ),
                   ListTile(
@@ -227,8 +97,8 @@ class _HomeState extends State<Home> {
               children: <Widget>[
                 Expanded(
                   child: ShortcutsWidget(
-                    allOn: allOn,
-                    allOff: allOff,
+                    allOn: MqttState.of(context).allOn,
+                    allOff: MqttState.of(context).allOff,
                   ),
                 ),
               ],
@@ -252,8 +122,6 @@ class _HomeState extends State<Home> {
                                 .lights
                                 .map((light) => LightSwitch(
                                       light: light,
-                                      state: lightState[light.topic] ?? false,
-                                      switchHandler: _switchHandler,
                                     ))
                                 .toList(),
                           )

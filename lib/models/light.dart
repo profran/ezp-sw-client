@@ -1,6 +1,7 @@
 class Light {
   String alias;
   String topic;
+  bool state = false;
 
   Light({this.alias, this.topic});
 
