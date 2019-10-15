@@ -13,6 +13,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController urlController = TextEditingController();
+  final TextEditingController portController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -30,104 +33,245 @@ class _SettingsScreenState extends State<SettingsScreen> {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
         ),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: EdgeInsets.only(bottom: 16.0, top: 16.0),
-            children: <Widget>[
-              ListTile(
-                contentPadding: EdgeInsets.only(
-                  left: 72.0,
-                  right: 32.0,
-                ),
-                title: Text('Broker URL'),
-                subtitle: Text(
-                    Settings.of(context).brokerURL ?? 'Broker URL not set'),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0))),
-                        title: Text('Edit broker URL'),
-                        content: TextFormField(
-                          controller: urlController,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'This field is not optional';
-                            }
-                            return null;
+        child: ListView(
+          children: <Widget>[
+            ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 32.0,
+              ),
+              title: Text('Broker',
+                  style: TextStyle(color: Theme.of(context).accentColor)),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 32.0,
+              ),
+              title: Text('URL'),
+              subtitle: Text(Settings.of(context).brokerURL ?? 'URL not set'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      title: Text('Edit broker URL'),
+                      content: TextFormField(
+                        controller: urlController,
+                        decoration: InputDecoration(
+                          labelText: 'URL',
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
                           },
-                          decoration: InputDecoration(
-                            labelText: 'URL',
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            Settings.of(context)
+                                .changeBrokerURL(urlController.text);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Save',
+                            style: Theme.of(context).primaryTextTheme.button,
                           ),
                         ),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          RaisedButton(
-                            onPressed: () {
-                              Settings.of(context)
-                                  .changeBrokerURL(urlController.text);
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              'Save',
-                              style: Theme.of(context).primaryTextTheme.button,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-              Divider(
-                indent: 0.0,
-                endIndent: 0.0,
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.only(
-                  left: 72.0,
-                  right: 16.0,
-                ),
-                title: Text('Demo mode'),
-                trailing: Switch(
-                  value: true,
-                  onChanged: (value) {
-                    // _saveDemoMode(value);
+                      ],
+                    );
                   },
-                ),
+                );
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 32.0,
               ),
-              Divider(
-                indent: 0.0,
-                endIndent: 0.0,
+              title: Text('Port'),
+              subtitle: Text(Settings.of(context).brokerPort.toString() ?? 'Port not set'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      title: Text('Edit broker port'),
+                      content: TextFormField(
+                        controller: portController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Port',
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            Settings.of(context)
+                                .changeBrokerPort(int.tryParse(portController.text) ?? null);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Save',
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 32.0,
               ),
-              ListTile(
-                contentPadding: EdgeInsets.only(
-                  left: 72.0,
-                  right: 16.0,
-                ),
-                title: Text('Dark mode'),
-                subtitle: Text('This shouldn\'t be an option'),
-                trailing: Switch(
-                  value: Settings.of(context).darkMode,
-                  onChanged: MediaQuery.of(context).platformBrightness ==
-                          Brightness.light
-                      ? (value) {
-                          Settings.of(context).changeDarkMode(value);
-                        }
-                      : null,
-                ),
+              title: Text('Username'),
+              subtitle: Text(Settings.of(context).brokerUsername ?? 'Username not set'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      title: Text('Edit broker username'),
+                      content: TextFormField(
+                        controller: usernameController,
+                        decoration: InputDecoration(
+                          labelText: 'Username',
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            Settings.of(context)
+                                .changeBrokerUsername(usernameController.text);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Save',
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 32.0,
               ),
-            ],
-          ),
+              title: Text('Password'),
+              subtitle:
+                  Text(Settings.of(context).brokerPassword ?? 'Password not set'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      title: Text('Edit broker password'),
+                      content: TextFormField(
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            Settings.of(context)
+                                .changeBrokerPassword(passwordController.text);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Save',
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            Divider(
+              indent: 0.0,
+              endIndent: 0.0,
+            ),
+            ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 32.0,
+              ),
+              title: Text('Appearance',
+                  style: TextStyle(color: Theme.of(context).accentColor)),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 16.0,
+              ),
+              title: Text('Dark mode'),
+              subtitle: Text('This shouldn\'t be an option'),
+              trailing: Switch(
+                value: Settings.of(context).darkMode,
+                onChanged: MediaQuery.of(context).platformBrightness ==
+                        Brightness.light
+                    ? (value) {
+                        Settings.of(context).changeDarkMode(value);
+                      }
+                    : null,
+              ),
+            ),
+            Divider(
+              indent: 0.0,
+              endIndent: 0.0,
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
+                right: 16.0,
+              ),
+              title: Text('Demo mode'),
+              trailing: Switch(
+                value: true,
+                onChanged: null,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -26,6 +26,10 @@ class _MqttStateContainerState extends State<MqttStateContainer> {
     print(Settings.of(context).brokerURL);
     client = MqttClient(Settings.of(context).brokerURL, 'Flutter app');
 
+    if (Settings.of(context).brokerPort != null) {
+      client.port = Settings.of(context).brokerPort;
+    }
+    client.logging(on: true);
     client.onDisconnected = _onDisconnected;
     client.onConnected = _onConnected;
 
@@ -33,7 +37,7 @@ class _MqttStateContainerState extends State<MqttStateContainer> {
       setState(() {
         client.connectionStatus.state = MqttConnectionState.connecting;
       });
-      await client.connect();
+      await client.connect(Settings.of(context).brokerUsername, Settings.of(context).brokerPassword);
     } catch (e) {
       print(e);
       disconnect();
