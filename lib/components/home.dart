@@ -60,7 +60,7 @@ class Home extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: Icon(Icons.add),
-                    title: Text('Add light'),
+                    title: Text('Add module'),
                     onTap: () {
                       Navigator.pushNamed(context, '/add');
                     },

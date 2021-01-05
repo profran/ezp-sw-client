@@ -5,9 +5,7 @@ import '../state/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
-  SettingsScreen({Key key, this.addLight}) : super(key: key);
-
-  final Function addLight;
+  SettingsScreen({Key key}) : super(key: key);
 
   _SettingsScreenState createState() => _SettingsScreenState();
 }

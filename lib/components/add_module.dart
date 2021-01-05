@@ -55,7 +55,7 @@ class _AddModuleState extends State<AddModule> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Add light'),
+        title: Text('Add module'),
         actions: <Widget>[
           Builder(
             builder: (BuildContext context) {

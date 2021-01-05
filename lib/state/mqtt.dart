@@ -61,7 +61,7 @@ class MqttProvider extends ChangeNotifier {
     subscription = client.updates.listen(_onMessage);
     _modules
         .modules
-        .forEach((light) => client.subscribe(light.topic, MqttQos.exactlyOnce));
+        .forEach((module) => client.subscribe(module.topic, MqttQos.exactlyOnce));
   }
 
   void disconnect() {
