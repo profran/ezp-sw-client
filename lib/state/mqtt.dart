@@ -22,7 +22,6 @@ class MqttProvider extends ChangeNotifier {
     this._modules = modules;
   }
 
-
   void connect() async {
     print(_settings.brokerURL);
     client = MqttClient(_settings.brokerURL, 'Flutter app');
@@ -38,8 +37,9 @@ class MqttProvider extends ChangeNotifier {
       this.client.connectionStatus.state = MqttConnectionState.connecting;
       notifyListeners();
 
-      await this.client.connect(_settings.brokerUsername,
-          _settings.brokerPassword);
+      await this
+          .client
+          .connect(_settings.brokerUsername, _settings.brokerPassword);
     } catch (e) {
       print(e);
       disconnect();
@@ -55,13 +55,11 @@ class MqttProvider extends ChangeNotifier {
   void _onConnected() {
     print('MQTT client connected');
 
-    this.connectionState = this.client?.connectionStatus?.state;
+    this.connectionState = MqttConnectionState.connected;
     notifyListeners();
 
     subscription = client.updates.listen(_onMessage);
-    _modules
-        .modules
-        .forEach((module) => client.subscribe(module.topic, MqttQos.exactlyOnce));
+    _subscribeAll();
   }
 
   void disconnect() {
@@ -69,7 +67,7 @@ class MqttProvider extends ChangeNotifier {
   }
 
   void _onDisconnected() {
-    this.connectionState = this.client.connectionStatus.state;
+    this.connectionState = MqttConnectionState.disconnected;
     this.client = null;
     this.subscription?.cancel();
     this.subscription = null;
@@ -83,8 +81,23 @@ class MqttProvider extends ChangeNotifier {
     print('MQTT message: topic is <${event[0].topic}>, '
         'payload is <-- $message -->');
 
-    _modules
-        .changeModuleState(event[0].topic, message);
+    _modules.changeModuleState(event[0].topic, message);
+  }
+
+  void subscribe(String topic) {
+    client.subscribe(topic, MqttQos.exactlyOnce);
+  }
+
+  void _subscribeAll() {
+    List<String> topics = [];
+    for (var mod in _modules.modules) {
+      if (client.getSubscriptionsStatus(mod.topic) ==
+          MqttSubscriptionStatus.doesNotExist) {
+        topics.add(mod.topic);
+      }
+    }
+
+    topics.forEach((topic) => subscribe(topic));
   }
 
   void switchHandler(String topic, bool state) {
@@ -100,8 +113,6 @@ class MqttProvider extends ChangeNotifier {
   }
 
   void _broadcast(String message) {
-    this._modules
-        .modules
-        .forEach((module) => _publish(module.topic, message));
+    this._modules.modules.forEach((module) => _publish(module.topic, message));
   }
 }

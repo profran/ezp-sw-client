@@ -12,7 +12,7 @@ class ModulesProvider extends ChangeNotifier {
     this._getSavedModules();
   }
 
-  void addModule(String alias, String topic, String type) async {
+  void addModule(String alias, String topic, ModuleType type) async {
     this.modules.add(Module(alias: alias, topic: topic, type: type));
 
     _saveModules();

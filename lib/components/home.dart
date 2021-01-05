@@ -1,10 +1,11 @@
+import 'package:ezp_sw_client/models/module.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:provider/provider.dart';
-import '../components/light_switch.dart';
-import '../components/shortcuts_widget.dart';
+
 import '../state/modules.dart';
 import '../state/mqtt.dart';
+import 'light_widget.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -31,7 +32,7 @@ class Home extends StatelessWidget {
       default:
         fab = FloatingActionButton.extended(
           tooltip: 'Connect',
-          onPressed: Provider.of<MqttProvider>(context).connect,
+          onPressed: Provider.of<MqttProvider>(context, listen: false).connect,
           label: Text('Connect to broker'),
         );
     }
@@ -69,7 +70,7 @@ class Home extends StatelessWidget {
                     leading: Icon(Icons.close),
                     title: Text('Disconnect'),
                     onTap: () {
-                      Provider.of<MqttProvider>(context).disconnect();
+                      Provider.of<MqttProvider>(context, listen: false).disconnect();
                     },
                   ),
                   ListTile(
@@ -97,24 +98,24 @@ class Home extends StatelessWidget {
             Row(
               children: <Widget>[
                 Expanded(
-                    child: Provider.of<ModulesProvider>(context).modules.isNotEmpty
-                        ? GridView.count(
-                            padding: EdgeInsets.all(18),
-                            crossAxisSpacing: 18,
-                            mainAxisSpacing: 18,
-                            crossAxisCount: 2,
-                            childAspectRatio: 2.0 / 1.0,
-                            shrinkWrap: true,
-                            children: Provider.of<ModulesProvider>(context)
-                                .modules
-                                .map((module) => LightSwitch(
-                                      module: module,
-                                    ))
-                                .toList(),
-                          )
-                        : Center(
-                            child: CircularProgressIndicator(),
-                          )),
+                  child:
+                      Provider.of<ModulesProvider>(context).modules.isNotEmpty
+                          ? GridView.count(
+                              padding: EdgeInsets.all(18),
+                              crossAxisSpacing: 18,
+                              mainAxisSpacing: 18,
+                              crossAxisCount: 2,
+                              childAspectRatio: 2.0 / 1.0,
+                              shrinkWrap: true,
+                              children: Provider.of<ModulesProvider>(context)
+                                  .modules
+                                  .map((module) => getWidgetFromModule(module))
+                                  .toList(),
+                            )
+                          : Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                ),
               ],
             ),
           ],

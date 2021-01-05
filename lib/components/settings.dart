@@ -49,7 +49,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('URL'),
-              subtitle: Text(Provider.of<SettingsProvider>(context).brokerURL ?? 'URL not set'),
+              subtitle: Text(Provider.of<SettingsProvider>(context).brokerURL ??
+                  'URL not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -73,7 +74,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Provider.of<SettingsProvider>(context)
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
                                 .changeBrokerURL(urlController.text);
                             Navigator.of(context).pop();
                           },
@@ -94,7 +96,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('Port'),
-              subtitle: Text(Provider.of<SettingsProvider>(context).brokerPort.toString() ?? 'Port not set'),
+              subtitle: Text(Provider.of<SettingsProvider>(context)
+                      .brokerPort
+                      .toString() ??
+                  'Port not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -119,8 +124,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Provider.of<SettingsProvider>(context)
-                                .changeBrokerPort(int.tryParse(portController.text) ?? null);
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
+                                .changeBrokerPort(
+                                    int.tryParse(portController.text) ?? null);
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -140,7 +147,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('Username'),
-              subtitle: Text(Provider.of<SettingsProvider>(context).brokerUsername ?? 'Username not set'),
+              subtitle: Text(
+                  Provider.of<SettingsProvider>(context).brokerUsername ??
+                      'Username not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -164,7 +173,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Provider.of<SettingsProvider>(context)
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
                                 .changeBrokerUsername(usernameController.text);
                             Navigator.of(context).pop();
                           },
@@ -185,8 +195,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('Password'),
-              subtitle:
-                  Text(Provider.of<SettingsProvider>(context).brokerPassword ?? 'Password not set'),
+              subtitle: Text(
+                  Provider.of<SettingsProvider>(context).brokerPassword ??
+                      'Password not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -210,7 +221,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Provider.of<SettingsProvider>(context)
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
                                 .changeBrokerPassword(passwordController.text);
                             Navigator.of(context).pop();
                           },
@@ -250,7 +262,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: MediaQuery.of(context).platformBrightness ==
                         Brightness.light
                     ? (value) {
-                        Provider.of<SettingsProvider>(context).changeDarkMode(value);
+                        Provider.of<SettingsProvider>(context, listen: false)
+                            .changeDarkMode(value);
                       }
                     : null,
               ),

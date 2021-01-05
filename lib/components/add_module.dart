@@ -1,4 +1,6 @@
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:ezp_sw_client/models/module.dart';
+import 'package:ezp_sw_client/state/mqtt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -19,6 +21,7 @@ class _AddModuleState extends State<AddModule> {
   final TextEditingController topicController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String error;
+  ModuleType moduleType = ModuleType.light;
 
   void addModule() {
     if (aliasController.text != null && topicController.text != null) {
@@ -63,10 +66,14 @@ class _AddModuleState extends State<AddModule> {
                 icon: Icon(Icons.done),
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-                    Provider.of<ModulesProvider>(context).addModule(
-                        aliasController.text,
-                        topicController.text,
-                        'HARDCODED_TYPE');
+                    Provider.of<ModulesProvider>(context, listen: false)
+                        .addModule(
+                      aliasController.text,
+                      topicController.text,
+                      moduleType,
+                    );
+                    Provider.of<MqttProvider>(context, listen: false)
+                        .subscribe(topicController.text);
                     Navigator.pop(context);
                   } else {
                     final snackbar = SnackBar(
@@ -103,6 +110,25 @@ class _AddModuleState extends State<AddModule> {
           key: _formKey,
           child: Column(
             children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(bottom: 18.0),
+                child: DropdownButtonFormField<ModuleType>(
+                  value: moduleType,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Module type',
+                  ),
+                  onChanged: (ModuleType newValue) {
+                    setState(() {
+                      moduleType = newValue;
+                    });
+                  },
+                  items: ModuleType.values.map((ModuleType moduleType) {
+                    return DropdownMenuItem<ModuleType>(
+                        value: moduleType, child: Text(moduleType.toString()));
+                  }).toList(),
+                ),
+              ),
               Container(
                 padding: EdgeInsets.only(bottom: 18.0),
                 child: TextFormField(
