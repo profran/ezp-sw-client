@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_switch/state/settings.dart';
+import 'package:provider/provider.dart';
+import '../state/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
-  SettingsScreen({Key key, this.addLight}) : super(key: key);
-
-  final Function addLight;
+  SettingsScreen({Key key}) : super(key: key);
 
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -50,7 +49,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('URL'),
-              subtitle: Text(Settings.of(context).brokerURL ?? 'URL not set'),
+              subtitle: Text(Provider.of<SettingsProvider>(context).brokerURL ??
+                  'URL not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -74,7 +74,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Settings.of(context)
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
                                 .changeBrokerURL(urlController.text);
                             Navigator.of(context).pop();
                           },
@@ -95,7 +96,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('Port'),
-              subtitle: Text(Settings.of(context).brokerPort.toString() ?? 'Port not set'),
+              subtitle: Text(Provider.of<SettingsProvider>(context)
+                      .brokerPort
+                      .toString() ??
+                  'Port not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -120,8 +124,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Settings.of(context)
-                                .changeBrokerPort(int.tryParse(portController.text) ?? null);
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
+                                .changeBrokerPort(
+                                    int.tryParse(portController.text) ?? null);
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -141,7 +147,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('Username'),
-              subtitle: Text(Settings.of(context).brokerUsername ?? 'Username not set'),
+              subtitle: Text(
+                  Provider.of<SettingsProvider>(context).brokerUsername ??
+                      'Username not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -165,7 +173,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Settings.of(context)
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
                                 .changeBrokerUsername(usernameController.text);
                             Navigator.of(context).pop();
                           },
@@ -186,8 +195,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 right: 32.0,
               ),
               title: Text('Password'),
-              subtitle:
-                  Text(Settings.of(context).brokerPassword ?? 'Password not set'),
+              subtitle: Text(
+                  Provider.of<SettingsProvider>(context).brokerPassword ??
+                      'Password not set'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -211,7 +221,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Settings.of(context)
+                            Provider.of<SettingsProvider>(context,
+                                    listen: false)
                                 .changeBrokerPassword(passwordController.text);
                             Navigator.of(context).pop();
                           },
@@ -247,11 +258,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: Text('Dark mode'),
               subtitle: Text('This shouldn\'t be an option'),
               trailing: Switch(
-                value: Settings.of(context).darkMode,
+                value: Provider.of<SettingsProvider>(context).darkMode,
                 onChanged: MediaQuery.of(context).platformBrightness ==
                         Brightness.light
                     ? (value) {
-                        Settings.of(context).changeDarkMode(value);
+                        Provider.of<SettingsProvider>(context, listen: false)
+                            .changeDarkMode(value);
                       }
                     : null,
               ),
