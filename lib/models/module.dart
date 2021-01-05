@@ -1,19 +1,22 @@
-class Light {
+class Module {
   String alias;
   String topic;
-  bool state = false;
+  String state;
+  String type;
 
-  Light({this.alias, this.topic});
+  Module({this.alias, this.topic, this.type});
 
-  Light.fromJson(Map<String, dynamic> json) {
+  Module.fromJson(Map<String, dynamic> json) {
     alias = json['alias'];
     topic = json['topic'];
+    type = json['type'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['alias'] = this.alias;
     data['topic'] = this.topic;
+    data['type'] = this.type;
     return data;
   }
 }

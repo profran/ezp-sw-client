@@ -1,60 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:mqtt_switch/components/add_light.dart';
-import 'package:mqtt_switch/components/home.dart';
-import 'package:mqtt_switch/components/settings.dart';
-import 'package:mqtt_switch/state/lights.dart';
-import 'package:mqtt_switch/state/mqttState.dart';
-import 'package:mqtt_switch/state/settings.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(App());
+import 'app.dart';
+import 'state/modules.dart';
+import 'state/mqtt.dart';
+import 'state/settings.dart';
 
-ThemeData lightTheme = new ThemeData(
-  brightness: Brightness.light,
-  primarySwatch: Colors.teal,
-  primaryColor: Colors.teal,
-  appBarTheme: AppBarTheme(
-    color: Colors.teal,
-    brightness: Brightness.light,
-  ),
-  scaffoldBackgroundColor: Colors.teal,
-  backgroundColor: Colors.white,
-);
+void main() {
+  runApp(Main());
+}
 
-ThemeData darkTheme = new ThemeData(
-  brightness: Brightness.dark,
-  primarySwatch: Colors.teal,
-  primaryColor: Colors.teal,
-  appBarTheme: AppBarTheme(
-    color: Colors.grey[800],
-    brightness: Brightness.dark,
-  ),
-  scaffoldBackgroundColor: Colors.teal,
-  backgroundColor: Colors.grey[900],
-);
-
-class App extends StatelessWidget {
-  const App({Key key}) : super(key: key);
+class Main extends StatelessWidget {
+  const Main({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SettingsContainer(
-      child: LightsContainer(
-        child: MqttStateContainer(
-          child: Builder(builder: (context) {
-            return MaterialApp(
-              title: 'MQTT Switch',
-              theme: Settings.of(context).darkMode ? darkTheme : lightTheme,
-              darkTheme: darkTheme,
-              initialRoute: '/',
-              routes: {
-                '/': (context) => Home(),
-                '/add': (context) => AddLight(),
-                '/settings': (context) => SettingsScreen(),
-              },
-            );
-          }),
-        ),
-      ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => ModulesProvider()),
+        ChangeNotifierProxyProvider2<SettingsProvider, ModulesProvider,
+            MqttProvider>(
+          create: (_) => MqttProvider(),
+          update: (context, settings, modules, mqtt) => mqtt
+            ..settings = settings
+            ..modules = modules,
+        )
+      ],
+      child: App(),
     );
   }
 }

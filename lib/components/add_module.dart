@@ -2,25 +2,27 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:mqtt_switch/state/lights.dart';
+import 'package:provider/provider.dart';
 
-class AddLight extends StatefulWidget {
-  AddLight({Key key, this.addLight}) : super(key: key);
+import '../state/modules.dart';
 
-  final Function addLight;
+class AddModule extends StatefulWidget {
+  AddModule({Key key, this.addModule}) : super(key: key);
 
-  _AddLightState createState() => _AddLightState();
+  final Function addModule;
+
+  _AddModuleState createState() => _AddModuleState();
 }
 
-class _AddLightState extends State<AddLight> {
+class _AddModuleState extends State<AddModule> {
   final TextEditingController aliasController = TextEditingController();
   final TextEditingController topicController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String error;
 
-  void addLight() {
+  void addModule() {
     if (aliasController.text != null && topicController.text != null) {
-      this.widget.addLight(aliasController.text, topicController.text);
+      this.widget.addModule(aliasController.text, topicController.text);
     }
   }
 
@@ -61,7 +63,10 @@ class _AddLightState extends State<AddLight> {
                 icon: Icon(Icons.done),
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-                    Lights.of(context).addLight(aliasController.text, topicController.text);
+                    Provider.of<ModulesProvider>(context).addModule(
+                        aliasController.text,
+                        topicController.text,
+                        'HARDCODED_TYPE');
                     Navigator.pop(context);
                   } else {
                     final snackbar = SnackBar(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mqtt_switch/models/light.dart';
-import 'package:mqtt_switch/state/mqttState.dart';
+import '../models/module.dart';
+import '../state/mqtt.dart';
 
 class LightSwitch extends StatelessWidget {
-  const LightSwitch({Key key, this.light}) : super(key: key);
+  const LightSwitch({Key key, this.module}) : super(key: key);
 
-  final Light light;
+  final Module module;
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +46,15 @@ class LightSwitch extends StatelessWidget {
           side: BorderSide(color: Colors.grey[400], width: 1.0),
         ),
         elevation: 0.0,
-        color: light.state
+        color: module.state == '1'
             ? Theme.of(context).primaryColor
             : Theme.of(context).dialogBackgroundColor,
         onPressed: () {
-          MqttState.of(context).switchHandler(light.topic, !light.state);
+          // MqttState.of(context).switchHandler(light.topic, !light.state);
         },
         child: Text(
-          light.alias,
-          style: light.state ? Theme.of(context).primaryTextTheme.button : null,
+          module.alias,
+          style: module.state == '1' ? Theme.of(context).primaryTextTheme.button : null,
         ),
       ),
     );

@@ -1,5 +1,9 @@
-name: mqtt_switch
-description: A new Flutter project.
+name: ezp_sw_client
+description: App client that connects to a MQTT broker
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -14,12 +18,13 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
+  
+  provider: ^4.3.2+3
   material_design_icons_flutter: 3.2.4096
   mqtt_client: ^5.5.4
   shared_preferences: ^0.5.3+4

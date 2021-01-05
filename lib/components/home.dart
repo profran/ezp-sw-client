@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
-import 'package:mqtt_switch/components/light_switch.dart';
-import 'package:mqtt_switch/components/shortcuts_widget.dart';
-import 'package:mqtt_switch/state/lights.dart';
-import 'package:mqtt_switch/state/mqttState.dart';
+import 'package:provider/provider.dart';
+import '../components/light_switch.dart';
+import '../components/shortcuts_widget.dart';
+import '../state/modules.dart';
+import '../state/mqtt.dart';
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget fab;
 
-    switch (MqttState.of(context).connectionState) {
+    switch (Provider.of<MqttProvider>(context).connectionState) {
       case mqtt.MqttConnectionState.connected:
         fab = FloatingActionButton(
           tooltip: 'Add',
@@ -30,7 +31,7 @@ class Home extends StatelessWidget {
       default:
         fab = FloatingActionButton.extended(
           tooltip: 'Connect',
-          onPressed: MqttState.of(context).connect,
+          onPressed: Provider.of<MqttProvider>(context).connect,
           label: Text('Connect to broker'),
         );
     }
@@ -68,7 +69,7 @@ class Home extends StatelessWidget {
                     leading: Icon(Icons.close),
                     title: Text('Disconnect'),
                     onTap: () {
-                      MqttState.of(context).disconnect();
+                      Provider.of<MqttProvider>(context).disconnect();
                     },
                   ),
                   ListTile(
@@ -96,21 +97,7 @@ class Home extends StatelessWidget {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: ShortcutsWidget(
-                    allOn: MqttState.of(context).allOn,
-                    allOff: MqttState.of(context).allOff,
-                  ),
-                ),
-              ],
-            ),
-            Divider(
-              indent: 18.0,
-              endIndent: 18.0,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                    child: Lights.of(context).lights.isNotEmpty
+                    child: Provider.of<ModulesProvider>(context).modules.isNotEmpty
                         ? GridView.count(
                             padding: EdgeInsets.all(18),
                             crossAxisSpacing: 18,
@@ -118,10 +105,10 @@ class Home extends StatelessWidget {
                             crossAxisCount: 2,
                             childAspectRatio: 2.0 / 1.0,
                             shrinkWrap: true,
-                            children: Lights.of(context)
-                                .lights
-                                .map((light) => LightSwitch(
-                                      light: light,
+                            children: Provider.of<ModulesProvider>(context)
+                                .modules
+                                .map((module) => LightSwitch(
+                                      module: module,
                                     ))
                                 .toList(),
                           )
