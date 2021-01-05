@@ -1,4 +1,4 @@
-# mqtt_switch
+# ezp_sw_client
 
 A new Flutter project.
 
