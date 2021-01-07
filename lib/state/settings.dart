@@ -7,6 +7,7 @@ class SettingsProvider extends ChangeNotifier {
   String brokerUsername;
   String brokerPassword;
   bool darkMode = false;
+  bool usesAWSIotCore = false;
 
   SettingsProvider() {
     // TODO: Might be better to save and get all the settings at once
@@ -15,6 +16,7 @@ class SettingsProvider extends ChangeNotifier {
     _getSavedBrokerUsername();
     _getSavedBrokerPassword();
     _getSavedDarkMode();
+    _getSavedUsesAWSIotCore();
   }
 
   void changeBrokerURL(String brokerURL) {
@@ -56,7 +58,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   void changeBrokerUsername(String brokerUsername) {
-    brokerUsername = brokerUsername != '' ? brokerUsername : null;
+    this.brokerUsername = brokerUsername != '' ? brokerUsername : null;
     notifyListeners();
 
     this._saveBrokerUsername(brokerUsername);
@@ -75,7 +77,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   void changeBrokerPassword(String brokerPassword) {
-    brokerPassword = brokerPassword != '' ? brokerPassword : null;
+    this.brokerPassword = brokerPassword != '' ? brokerPassword : null;
     notifyListeners();
 
     _saveBrokerPassword(brokerPassword);
@@ -94,7 +96,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   void changeDarkMode(bool darkMode) {
-    darkMode = darkMode ?? false;
+    this.darkMode = darkMode ?? false;
     notifyListeners();
 
     _saveDarkMode(darkMode);
@@ -110,5 +112,24 @@ class SettingsProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     this.changeDarkMode(prefs.getBool('darkMode'));
+  }
+
+  void changeUsesAWSIotCore(bool usesAWSIotCore) {
+    this.usesAWSIotCore = usesAWSIotCore ?? false;
+    notifyListeners();
+
+    _saveUsesAWSIotCore(usesAWSIotCore);
+  }
+
+  void _saveUsesAWSIotCore(bool usesAWSIotCore) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool('usesAWSIotCore', usesAWSIotCore);
+  }
+
+  void _getSavedUsesAWSIotCore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    this.changeUsesAWSIotCore(prefs.getBool('usesAWSIotCore'));
   }
 }

@@ -2,9 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:sigv4/sigv4.dart';
 
 import 'modules.dart';
 import 'settings.dart';
+
+const serviceName = 'iotdevicegateway';
+const awsS4Request = 'aws4_request';
+const aws4HmacSha256 = 'AWS4-HMAC-SHA256';
+const scheme = 'wss://';
+const urlPath = '/mqtt';
 
 class MqttProvider extends ChangeNotifier {
   SettingsProvider _settings;
@@ -23,12 +30,16 @@ class MqttProvider extends ChangeNotifier {
   }
 
   void connect() async {
-    print(_settings.brokerURL);
-    client = MqttClient(_settings.brokerURL, 'Flutter app');
-
-    if (_settings.brokerPort != null) {
-      client.port = _settings.brokerPort;
+    print(getBsSignedUrl());
+    if (_settings.usesAWSIotCore) {
+      client = MqttClient(getBsSignedUrl(), 'Flutter app');
+      client.port = 443;
+      client.useWebSocket = true;
+    } else {
+      client = MqttClient(_settings.brokerURL, 'Flutter app');
+      client.port = _settings.brokerPort ?? 1883;
     }
+
     client.logging(on: true);
     client.onDisconnected = _onDisconnected;
     client.onConnected = _onConnected;
@@ -50,6 +61,73 @@ class MqttProvider extends ChangeNotifier {
       print('ERROR: MQTT client connection failed - '
           'disconnecting, state is ${client?.connectionStatus?.state}');
     }
+  }
+
+  String getBsSignedUrl() {
+    var now = _generateDatetime();
+    var region = 'us-east-2';
+    var credentials = {
+      "accessKey": _settings.brokerUsername,
+      "secretKey": _settings.brokerPassword,
+    };
+    var endpoint = _settings.brokerURL;
+
+    var creds = [
+      credentials['accessKey'],
+      _getDate(now),
+      region,
+      serviceName,
+      awsS4Request,
+    ];
+    var queryParams = {
+      'X-Amz-Algorithm': aws4HmacSha256,
+      'X-Amz-Credential': creds.join('/'),
+      'X-Amz-Date': now,
+      'X-Amz-SignedHeaders': 'host',
+    };
+
+    var canonicalQueryString = Sigv4.buildCanonicalQueryString(queryParams);
+    var request = Sigv4.buildCanonicalRequest(
+      'GET',
+      urlPath,
+      queryParams,
+      {'host': endpoint},
+      '',
+    );
+
+    var hashedCanonicalRequest = Sigv4.hashPayload(request);
+    var stringToSign = Sigv4.buildStringToSign(
+      now,
+      Sigv4.buildCredentialScope(now, region, serviceName),
+      hashedCanonicalRequest,
+    );
+
+    var signingKey = Sigv4.calculateSigningKey(
+      credentials['secretKey'],
+      now,
+      region,
+      serviceName,
+    );
+
+    var signature = Sigv4.calculateSignature(signingKey, stringToSign);
+
+    var finalParams = '$canonicalQueryString&X-Amz-Signature=$signature';
+
+    return '$scheme$endpoint$urlPath?$finalParams';
+  }
+
+  String _generateDatetime() {
+    return new DateTime.now()
+        .toUtc()
+        .toString()
+        .replaceAll(new RegExp(r'\.\d*Z$'), 'Z')
+        .replaceAll(new RegExp(r'[:-]|\.\d{3}'), '')
+        .split(' ')
+        .join('T');
+  }
+
+  String _getDate(String dateTime) {
+    return dateTime.substring(0, 8);
   }
 
   void _onConnected() {
@@ -85,7 +163,7 @@ class MqttProvider extends ChangeNotifier {
   }
 
   void subscribe(String topic) {
-    client.subscribe(topic, MqttQos.exactlyOnce);
+    client.subscribe(topic, MqttQos.atLeastOnce);
   }
 
   void _subscribeAll() {
@@ -108,8 +186,7 @@ class MqttProvider extends ChangeNotifier {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
 
     builder.addString(message);
-    this.client.publishMessage(topic, MqttQos.values[0], builder.payload,
-        retain: true);
+    this.client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload);
   }
 
   void _broadcast(String message) {

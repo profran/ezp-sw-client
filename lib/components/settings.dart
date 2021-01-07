@@ -46,6 +46,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ListTile(
               contentPadding: EdgeInsets.only(
                 left: 72.0,
+                right: 16.0,
+              ),
+              title: Text('AWS Iot Core'),
+              // TODO: Use Consumer<T> instead of Provider.of<T>
+              trailing: Consumer<SettingsProvider>(
+                builder: (_, settings, __) => Switch(
+                  value: settings.usesAWSIotCore,
+                  onChanged: (value) {
+                    settings.changeUsesAWSIotCore(value);
+                  },
+                ),
+              ),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(
+                left: 72.0,
                 right: 32.0,
               ),
               title: Text('URL'),
